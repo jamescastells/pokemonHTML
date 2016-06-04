@@ -1,10 +1,18 @@
 #screen{
-  background-image:url("../tiles/ground.png");
   width: 320px;
   height: 288px;
   border:1px solid black;
   margin-left: auto;
   margin-right: auto;
+  overflow:hidden;
+}
+
+#location{
+  background-image:url("../tiles/ground.png");
+  position:relative;
+  top:0px;
+  left:0px;
+
 }
 
 #player{

@@ -1,2 +1,3 @@
 border:grass.png
-size:20x10
+size:320x320
+wild:no

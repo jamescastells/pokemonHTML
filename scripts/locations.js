@@ -27,9 +27,12 @@ function loadLocation(name){
                     height = parseInt(w_h[1]);
                   }
                 }
+                $("#location").css("width",width);
+                $("#location").css("height",height);
+                $("#screen").css("background-image","url(tiles/grass.png)");
             }
         }
     }
-    rawFile.send(null);
 
+    rawFile.send(null);
 }
