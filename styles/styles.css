@@ -1,0 +1,17 @@
+#screen{
+  background-image:url("../tiles/ground.png");
+  width: 320px;
+  height: 288px;
+  border:1px solid black;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#player{
+  background-image:url("../sprites/up.png");
+  width:28px;
+  height:32px;
+  position: relative;
+  top:120; /* +8 initial point */
+  left:130; /* +2 initial point */
+}

@@ -1,0 +1,2 @@
+border:grass.png
+size:20x10
