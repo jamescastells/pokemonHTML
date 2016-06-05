@@ -21,20 +21,17 @@
 
 #borderTop{
   height:160px;
-  width:608px;
   position:relative;
   float: left;
 }
 
 #borderLeft{
-  height:448px;
-  width:160px;
+  width:128px;
   position:relative;
   float: left;
 }
 
 #borderRight{
-  height:448px;
   width:160px;
   position:relative;
   float: left;
@@ -42,7 +39,6 @@
 
 #borderDown{
   height:128px;
-  width:352px;
   position:relative;
   float: left;
 }

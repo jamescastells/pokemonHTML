@@ -26,16 +26,22 @@ function loadDataOfPlayer(){
                     $("#location").css("top",  (screen_height/2) - y*32 + 16);
                     location_top = parseInt($("#location").css("top"));
                     location_left = parseInt($("#location").css("left"));
+                    location_width = parseInt($("#location").css("width"));
+                    location_height = parseInt($("#location").css("height"));
                     $("#player").css("top", screen_height/2 - location_top - 24);
                     $("#player").css("left", screen_width/2 - location_left - 30);
                     $("#borderTop").css("top", -y*32);
                     $("#borderTop").css("left", -x*32 + 32);
-                    $("#borderLeft").css("left", -x*32);
+                    $("#borderTop").css("width",location_width + screen_width - 32);
+                    $("#borderLeft").css("left", -x*32 + 32);
                     $("#borderLeft").css("top", -y*32);
-                    $("#borderRight").css("left", -x*32 +320);
+                    $("#borderLeft").css("height", location_height + screen_height/2 - 16);
+                    $("#borderRight").css("left", location_width - 32*x + 32);
+                    $("#borderRight").css("height", location_height + screen_height/2 - 16);
                     $("#borderRight").css("top", -y*32);
                     $("#borderDown").css("left", 160 - x*32);
                     $("#borderDown").css("top", -y*32 - 128);
+                    $("#borderDown").css("width",location_width + screen_width - 32);
                   }
                 }
               }
@@ -45,8 +51,6 @@ function loadDataOfPlayer(){
 }
 
 function loadLocation(name){
-
-  loadDataOfPlayer();
 
   var rawFile = new XMLHttpRequest();
     rawFile.open("GET", name, false);
@@ -82,6 +86,6 @@ function loadLocation(name){
             }
         }
     }
-
     rawFile.send(null);
+    loadDataOfPlayer();
 }

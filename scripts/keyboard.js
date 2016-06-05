@@ -57,7 +57,7 @@ document.onkeydown = function(event) {
       });
     }
     else if (key_code==40){ //down
-      if (parseInt($("#location").css("top")) == parseInt($("#location").css("height"))/-2){
+      if (parseInt($("#location").css("top")) == -(parseInt($("#location").css("height"))-160)){
         $("#player").css("background-image","url(sprites/down.png)");
         walking=false;
         return;
@@ -146,7 +146,7 @@ document.onkeydown = function(event) {
       });
     }
     else if (key_code==39){ //right
-      if (parseInt($("#location").css("left")) == parseInt($("#location").css("width"))/-2){
+      if (parseInt($("#location").css("left")) == -(parseInt($("#location").css("width")) - 160)){
         $("#player").css("background-image","url(sprites/right.png)");
         walking=false;
         return;
