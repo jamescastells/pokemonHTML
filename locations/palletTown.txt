@@ -1,6 +1,7 @@
 border:grass.png
 size:20x18
 wild:no
+up:route1.txt,0
 barrier.png:1,2
 barrier.png:1,3
 barrier.png:1,4

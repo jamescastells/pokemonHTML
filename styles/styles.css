@@ -12,8 +12,14 @@
   position:relative;
 }
 
+#up{
+  position: relative;
+  float: left;
+  background-image:url("../tiles/ground.png");
+}
+
 #player{
-  background-image:url("../sprites/up.png");
+  background-image:url("../sprites/down.png");
   width:28px;
   height:32px;
   position: relative;

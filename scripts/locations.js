@@ -75,6 +75,11 @@ function loadLocation(name){
                     width = parseInt(w_h[0]*32);
                     height = parseInt(w_h[1]*32);
                   }
+                  if (property == "up"){
+                    info_connect = value.split(",");
+                    north_connector = info_connect[0];
+                    north_adj = info_connect[1];
+                  }
                   if (property.indexOf("png")>-1){
                     elemento = document.createElement("div");
                     elemento.style.width = '32px';
@@ -105,10 +110,76 @@ function loadLocation(name){
                 $("#borderLeft").css("background-image","url("+border_s+")");
                 $("#borderRight").css("background-image","url("+border_s+")");
                 $("#borderDown").css("background-image","url("+border_s+")");
+
             }
         }
     }
     rawFile.send(null);
     loadDataOfPlayer();
     refreshPlayerPositionData();
+    loadConnector("locations/"+north_connector,"#up",north_adj);
+}
+
+function loadConnector(name,where,adjustement){
+
+  var width_l, height_l;
+
+  var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", name, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var lines = rawFile.responseText.split('\n');
+                for(var line = 0; line < lines.length; line++){
+                  line_txt = lines[line];
+                  prop_val = line_txt.split(":");
+                  property = prop_val[0];
+                  value = prop_val[1];
+                  if (property == "border"){
+                    border = value;
+                  }
+                  if (property == "size"){
+                    size = value;
+                    w_h = size.split("x");
+                    width_l = parseInt(w_h[0]*32);
+                    height_l = parseInt(w_h[1]*32);
+                  }
+                  if (property.indexOf("png")>-1){
+                    elemento = document.createElement("div");
+                    elemento.style.width = '32px';
+                    elemento.style.height = '32px';
+                    pos = value.split(",");
+                    pos_x = pos[0];
+                    pos_y = pos[1];
+                    elemento.style.backgroundImage = "url('tiles/"+property+"')";
+                    $(where).append(elemento);
+                    elemento.style.position = 'absolute';
+                    elemento.style.left = pos_x*32 - 32;
+                    elemento.style.top = pos_y*32 - 32;
+                    if (property.indexOf("ground")>-1)
+                      $(elemento).addClass("ground");
+                    else if (property.indexOf("water")>-1)
+                      $(elemento).addClass("water");
+                    else if (property.indexOf("grass")>-1)
+                      $(elemento).addClass("grass");
+                    else {
+                      $(elemento).addClass("barrier");
+                    }
+                  }
+                }
+                $(where).css("width",width_l);
+                $(where).css("height",height_l);
+                actualLeft = parseInt($("#location").css("left"));
+                if (where == "#up"){
+                  [pl_x,pl_y] = obtainPlayerPosition();
+                  $(where).css("top",-height_l - height - 32*(pl_y+8));
+                  $(where).css("left",actualLeft + adjustement*32);
+                }
+            }
+        }
+    }
+    rawFile.send(null);
 }
