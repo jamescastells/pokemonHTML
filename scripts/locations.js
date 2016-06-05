@@ -75,6 +75,28 @@ function loadLocation(name){
                     width = parseInt(w_h[0]*32);
                     height = parseInt(w_h[1]*32);
                   }
+                  if (property.indexOf("png")>-1){
+                    elemento = document.createElement("div");
+                    elemento.style.width = '32px';
+                    elemento.style.height = '32px';
+                    pos = value.split(",");
+                    pos_x = pos[0];
+                    pos_y = pos[1];
+                    elemento.style.backgroundImage = "url('tiles/"+property+"')";
+                    $("#location").append(elemento);
+                    elemento.style.position = 'absolute';
+                    elemento.style.left = pos_x*32 - 32;
+                    elemento.style.top = pos_y*32 - 32;
+                    if (property.indexOf("ground")>-1)
+                      $(elemento).addClass("ground");
+                    else if (property.indexOf("water")>-1)
+                      $(elemento).addClass("water");
+                    else if (property.indexOf("grass")>-1)
+                      $(elemento).addClass("grass");
+                    else {
+                      $(elemento).addClass("barrier");
+                    }
+                  }
                 }
                 $("#location").css("width",width);
                 $("#location").css("height",height);
@@ -88,4 +110,5 @@ function loadLocation(name){
     }
     rawFile.send(null);
     loadDataOfPlayer();
+    refreshPlayerPositionData();
 }

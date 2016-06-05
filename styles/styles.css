@@ -17,6 +17,7 @@
   width:28px;
   height:32px;
   position: relative;
+  z-index: 999;
 }
 
 #borderTop{
@@ -41,4 +42,8 @@
   height:128px;
   position:relative;
   float: left;
+}
+
+body{
+  text-align:center;
 }
