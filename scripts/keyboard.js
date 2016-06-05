@@ -27,6 +27,26 @@ document.onkeydown = function(event) {
       $("#location").animate({
         'top':newTop
       },300);
+      actualTop = parseInt($("#borderTop").css("top"));
+      newTop = actualTop+32;
+      $("#borderTop").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderLeft").css("top"));
+      newTop = actualTop+32;
+      $("#borderLeft").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderRight").css("top"));
+      newTop = actualTop+32;
+      $("#borderRight").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderDown").css("top"));
+      newTop = actualTop+32;
+      $("#borderDown").animate({
+        'top':newTop
+      },300);
       actualTop = parseInt($("#player").css("top"));
       newTop = actualTop-32;
       $("#player").animate({
@@ -55,6 +75,26 @@ document.onkeydown = function(event) {
       $("#location").animate({
         'top':newTop
       },300);
+      actualTop = parseInt($("#borderTop").css("top"));
+      newTop = actualTop-32;
+      $("#borderTop").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderLeft").css("top"));
+      newTop = actualTop-32;
+      $("#borderLeft").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderRight").css("top"));
+      newTop = actualTop-32;
+      $("#borderRight").animate({
+        'top':newTop
+      },300);
+      actualTop = parseInt($("#borderDown").css("top"));
+      newTop = actualTop-32;
+      $("#borderDown").animate({
+        'top':newTop
+      },300);
       actualTop = parseInt($("#player").css("top"));
       newTop = actualTop+32;
       $("#player").animate({
@@ -74,6 +114,26 @@ document.onkeydown = function(event) {
       actualLeft = parseInt($("#location").css("left"));
       newLeft = actualLeft+32;
       $("#location").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderTop").css("left"));
+      newLeft = actualLeft+32;
+      $("#borderTop").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderLeft").css("left"));
+      newLeft = actualLeft+32;
+      $("#borderLeft").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderRight").css("left"));
+      newLeft = actualLeft+32;
+      $("#borderRight").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderDown").css("left"));
+      newLeft = actualLeft+32;
+      $("#borderDown").animate({
         'left':newLeft
       },300);
       actualLeft = parseInt($("#player").css("left"));
@@ -97,6 +157,26 @@ document.onkeydown = function(event) {
       $("#location").animate({
         'left':newLeft
       },300);
+      actualLeft = parseInt($("#borderTop").css("left"));
+      newLeft = actualLeft-32;
+      $("#borderTop").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderLeft").css("left"));
+      newLeft = actualLeft-32;
+      $("#borderLeft").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderRight").css("left"));
+      newLeft = actualLeft-32;
+      $("#borderRight").animate({
+        'left':newLeft
+      },300);
+      actualLeft = parseInt($("#borderDown").css("left"));
+      newLeft = actualLeft-32;
+      $("#borderDown").animate({
+        'left':newLeft
+      },300);
       actualLeft = parseInt($("#player").css("left"));
       newLeft = actualLeft+32;
       $("#player").animate({
@@ -105,5 +185,9 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/right.png)");
             walking=false;
       });
+    }
+    else{
+      walking=false;
+      return;
     }
 }
