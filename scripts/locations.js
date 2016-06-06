@@ -1,5 +1,9 @@
 var border;
 var size, width, height;
+var north_c = "none";
+var south_c = "none";
+var screen_height;
+var screen_width;
 
 function loadDataOfPlayer(){
   var rawFile = new XMLHttpRequest();
@@ -50,7 +54,9 @@ function loadDataOfPlayer(){
     rawFile.send(null);
 }
 
-function loadLocation(name){
+function loadLocation(name, start){
+
+  emptyLocation();
 
   var rawFile = new XMLHttpRequest();
     rawFile.open("GET", name, false);
@@ -77,8 +83,13 @@ function loadLocation(name){
                   }
                   if (property == "up"){
                     info_connect = value.split(",");
-                    north_connector = info_connect[0];
+                    north_c = info_connect[0];
                     north_adj = info_connect[1];
+                  }
+                  if (property == "down"){
+                    info_connect = value.split(",");
+                    south_c = info_connect[0];
+                    south_adj = info_connect[1];
                   }
                   if (property.indexOf("png")>-1){
                     elemento = document.createElement("div");
@@ -115,9 +126,14 @@ function loadLocation(name){
         }
     }
     rawFile.send(null);
-    loadDataOfPlayer();
-    refreshPlayerPositionData();
-    loadConnector("locations/"+north_connector,"#up",north_adj);
+    if (start == true){
+      loadDataOfPlayer();
+      refreshPlayerPositionData();
+    }
+    emptyConnectors();
+    if (north_c!="none"){
+      loadConnector("locations/"+north_c,"#up",north_adj);
+    }
 }
 
 function loadConnector(name,where,adjustement){
@@ -182,4 +198,40 @@ function loadConnector(name,where,adjustement){
         }
     }
     rawFile.send(null);
+}
+
+function checkIfLocationChanged(){
+
+  [pl_x,pl_y] = obtainPlayerPosition();
+  if (pl_y == 0 && north_c != "none"){ // has gone to the north connector
+    emptyConnectors();
+    loadLocation("locations/"+north_c, false);
+    $("#location").css("top",-height + (screen_height/2)+16);
+    $("#player").css("top",height-32 -8);
+    $("#borderTop").css("top",-height);
+    $("#borderRight").css("left",width-(pl_x*32)-32);
+    $("#borderRight").css("height",height + screen_height/2 - 16);
+    $("#borderRight").css("top",-height);
+    $("#borderDown").css("top",-height - screen_height/2 + 16);
+    $("#borderLeft").css("left",-width+(pl_x*32)-32);
+    $("#borderLeft").css("top",-height);
+    $("#borderLeft").css("height",height + screen_height/2 - 16);
+  }
+}
+
+function emptyLocation(){
+  loc = document.getElementById("location");
+  children = loc.children;
+  for (var i = 0; i<children.length;i++){
+    if (children[i].id!='player'){
+      loc.removeChild(children[i]);
+      i = i-1;
+    }
+  }
+}
+
+function emptyConnectors(){
+  $("#up").empty();
+  $("#up").css("width",0);
+  $("#up").css("height",0);
 }

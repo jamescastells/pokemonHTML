@@ -1,6 +1,8 @@
 border:grass.png
 size:20x36
 wild:yes
+up:none,0
+down:palletTown.txt,0
 ground_land.png:1,1
 ground_land.png:2,1
 ground_land.png:3,1

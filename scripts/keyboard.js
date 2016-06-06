@@ -3,15 +3,34 @@ var walkDown='right';
 var walking=false;
 var speed=150;
 
-function thereIsBarrier(pos_x, pos_y){
-  locationmap = document.getElementById("location");
-  barriers = locationmap.getElementsByClassName("barrier");
-  for (var i=0;i<barriers.length;i++){
-    barrier = barriers[i];
-    if (parseInt($(barrier).css("left")) == pos_x && parseInt($(barrier).css("top")) == pos_y)
-      return true;
-  }
-  return false;
+function thereIsBarrier(pos_x, pos_y, where){
+  var thereIs = false;
+  $("#"+where).find(".barrier").each(function(index){
+    barrier_l = parseInt($(this).css("left"))/32 + 1;
+    barrier_t = parseInt($(this).css("top"))/32 + 1;
+    if (barrier_l == pos_x && barrier_t == pos_y){
+      thereIs = true;
+    }
+
+  });
+  return thereIs;
+}
+
+function checkUp(pos_x,pos_y){
+    if (pos_y == 0){
+      if (north_c!='none'){
+        if (thereIsBarrier(pos_x,pos_y, "up")){
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+    return true;
 }
 
 document.onkeydown = function(event) {
@@ -20,13 +39,14 @@ document.onkeydown = function(event) {
     walking = true;
     var key_press = String.fromCharCode(event.keyCode);
   	var key_code = event.keyCode;
+    [pos_x,pos_y] = obtainPlayerPosition();
     if (key_code==38){ //up
-      if (parseInt($("#location").css("top")) == 128){
+      if (checkUp(pos_x,pos_y-1)==false){
         $("#player").css("background-image","url(sprites/up.png)");
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 2, parseInt($("#player").css("top")) - 32 + 8)){
+      if (thereIsBarrier(pos_x, pos_y-1,"location")){
         $("#player").css("background-image","url(sprites/up.png)");
         walking=false;
         return;
@@ -46,6 +66,7 @@ document.onkeydown = function(event) {
           'top':newTop
       },speed,function(){
           $("#player").css("background-image","url(sprites/up.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -56,7 +77,7 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 2, parseInt($("#player").css("top")) + 32 + 8)){
+      if (thereIsBarrier(pos_x,pos_y+1,"location")){
         $("#player").css("background-image","url(sprites/down.png)");
         walking=false;
         return;
@@ -76,6 +97,7 @@ document.onkeydown = function(event) {
           'top':newTop
       },speed,function(){
           $("#player").css("background-image","url(sprites/down.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -86,7 +108,7 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 32 - 2, parseInt($("#player").css("top")) + 8)){
+      if (thereIsBarrier(pos_x-1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/left.png)");
         walking=false;
         return;
@@ -99,6 +121,7 @@ document.onkeydown = function(event) {
           'left':newLeft
       },speed,function(){
           $("#player").css("background-image","url(sprites/left.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -109,7 +132,7 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) +32 - 2, parseInt($("#player").css("top")) + 8)){
+      if (thereIsBarrier(pos_x+1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/right.png)");
         walking=false;
         return;
@@ -122,6 +145,7 @@ document.onkeydown = function(event) {
           'left':newLeft
       },speed,function(){
           $("#player").css("background-image","url(sprites/right.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
