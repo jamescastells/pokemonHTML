@@ -3,14 +3,34 @@ var walkDown='right';
 var walking=false;
 var speed=150;
 
-function thereIsBarrier(pos_x, pos_y){
-  barriers = document.getElementsByClassName("barrier");
-  for (var i=0;i<barriers.length;i++){
-    barrier = barriers[i];
-    if (parseInt($(barrier).css("left")) == pos_x && parseInt($(barrier).css("top")) == pos_y)
-      return true;
-  }
-  return false;
+function thereIsBarrier(pos_x, pos_y, where){
+  var thereIs = false;
+  $("#"+where).find(".barrier").each(function(index){
+    barrier_l = parseInt($(this).css("left"))/32 + 1;
+    barrier_t = parseInt($(this).css("top"))/32 + 1;
+    if (barrier_l == pos_x && barrier_t == pos_y){
+      thereIs = true;
+    }
+
+  });
+  return thereIs;
+}
+
+function checkUp(pos_x,pos_y){
+    if (pos_y == 0){
+      if (north_c!='none'){
+        if (thereIsBarrier(pos_x,pos_y, "up")){
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+    return true;
 }
 
 document.onkeydown = function(event) {
@@ -19,13 +39,14 @@ document.onkeydown = function(event) {
     walking = true;
     var key_press = String.fromCharCode(event.keyCode);
   	var key_code = event.keyCode;
+    [pos_x,pos_y] = obtainPlayerPosition();
     if (key_code==38){ //up
-      if (parseInt($("#location").css("top")) == 128){
+      if (checkUp(pos_x,pos_y-1)==false){
         $("#player").css("background-image","url(sprites/up.png)");
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 2, parseInt($("#player").css("top")) - 32 + 8)){
+      if (thereIsBarrier(pos_x, pos_y-1,"location")){
         $("#player").css("background-image","url(sprites/up.png)");
         walking=false;
         return;
@@ -38,37 +59,14 @@ document.onkeydown = function(event) {
         $("#player").css("background-image","url(sprites/walkingUpLeft.png)");
         walkUp='right';
       }
-      actualTop = parseInt($("#location").css("top"));
-      newTop = actualTop+32;
-      $("#location").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderTop").css("top"));
-      newTop = actualTop+32;
-      $("#borderTop").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderLeft").css("top"));
-      newTop = actualTop+32;
-      $("#borderLeft").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderRight").css("top"));
-      newTop = actualTop+32;
-      $("#borderRight").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderDown").css("top"));
-      newTop = actualTop+32;
-      $("#borderDown").animate({
-        'top':newTop
-      },speed);
+      moveEverythingUp(32);
       actualTop = parseInt($("#player").css("top"));
       newTop = actualTop-32;
       $("#player").animate({
           'top':newTop
       },speed,function(){
           $("#player").css("background-image","url(sprites/up.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -79,7 +77,7 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 2, parseInt($("#player").css("top")) + 32 + 8)){
+      if (thereIsBarrier(pos_x,pos_y+1,"location")){
         $("#player").css("background-image","url(sprites/down.png)");
         walking=false;
         return;
@@ -92,37 +90,14 @@ document.onkeydown = function(event) {
         $("#player").css("background-image","url(sprites/walkingDownLeft.png)");
         walkDown='right';
       }
-      actualTop = parseInt($("#location").css("top"));
-      newTop = actualTop-32;
-      $("#location").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderTop").css("top"));
-      newTop = actualTop-32;
-      $("#borderTop").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderLeft").css("top"));
-      newTop = actualTop-32;
-      $("#borderLeft").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderRight").css("top"));
-      newTop = actualTop-32;
-      $("#borderRight").animate({
-        'top':newTop
-      },speed);
-      actualTop = parseInt($("#borderDown").css("top"));
-      newTop = actualTop-32;
-      $("#borderDown").animate({
-        'top':newTop
-      },speed);
+      moveEverythingUp(-32);
       actualTop = parseInt($("#player").css("top"));
       newTop = actualTop+32;
       $("#player").animate({
           'top':newTop
       },speed,function(){
           $("#player").css("background-image","url(sprites/down.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -133,43 +108,20 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) - 32 - 2, parseInt($("#player").css("top")) + 8)){
+      if (thereIsBarrier(pos_x-1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/left.png)");
         walking=false;
         return;
       }
       $("#player").css("background-image","url(sprites/walkingLeft.png)");
-      actualLeft = parseInt($("#location").css("left"));
-      newLeft = actualLeft+32;
-      $("#location").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderTop").css("left"));
-      newLeft = actualLeft+32;
-      $("#borderTop").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderLeft").css("left"));
-      newLeft = actualLeft+32;
-      $("#borderLeft").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderRight").css("left"));
-      newLeft = actualLeft+32;
-      $("#borderRight").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderDown").css("left"));
-      newLeft = actualLeft+32;
-      $("#borderDown").animate({
-        'left':newLeft
-      },speed);
+      moveEverythingLeft(32);
       actualLeft = parseInt($("#player").css("left"));
       newLeft = actualLeft-32;
       $("#player").animate({
           'left':newLeft
       },speed,function(){
           $("#player").css("background-image","url(sprites/left.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -180,43 +132,20 @@ document.onkeydown = function(event) {
         walking=false;
         return;
       }
-      if (thereIsBarrier(parseInt($("#player").css("left")) +32 - 2, parseInt($("#player").css("top")) + 8)){
+      if (thereIsBarrier(pos_x+1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/right.png)");
         walking=false;
         return;
       }
       $("#player").css("background-image","url(sprites/walkingRight.png)");
-      actualLeft = parseInt($("#location").css("left"));
-      newLeft = actualLeft-32;
-      $("#location").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderTop").css("left"));
-      newLeft = actualLeft-32;
-      $("#borderTop").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderLeft").css("left"));
-      newLeft = actualLeft-32;
-      $("#borderLeft").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderRight").css("left"));
-      newLeft = actualLeft-32;
-      $("#borderRight").animate({
-        'left':newLeft
-      },speed);
-      actualLeft = parseInt($("#borderDown").css("left"));
-      newLeft = actualLeft-32;
-      $("#borderDown").animate({
-        'left':newLeft
-      },speed);
+      moveEverythingLeft(-32);
       actualLeft = parseInt($("#player").css("left"));
       newLeft = actualLeft+32;
       $("#player").animate({
           'left':newLeft
       },speed,function(){
           $("#player").css("background-image","url(sprites/right.png)");
+          checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
       });
@@ -228,8 +157,79 @@ document.onkeydown = function(event) {
 
 }
 
-function refreshPlayerPositionData(){
+function obtainPlayerPosition(){
   l= (parseInt($("#player").css("left"))-2 + 32)/32;
   t= (parseInt($("#player").css("top"))+8 + 32)/32;
+  return [l,t]
+}
+
+function refreshPlayerPositionData(){
+  [l,t] = obtainPlayerPosition();
   $("#positionOfPlayer").text(l+ ", " + t);
+}
+
+function moveEverythingLeft(value){
+    actualLeft = parseInt($("#location").css("left"));
+    newLeft = actualLeft+value;
+    $("#location").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#borderTop").css("left"));
+    newLeft = actualLeft+value;
+    $("#borderTop").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#borderLeft").css("left"));
+    newLeft = actualLeft+value;
+    $("#borderLeft").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#borderRight").css("left"));
+    newLeft = actualLeft+value;
+    $("#borderRight").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#borderDown").css("left"));
+    newLeft = actualLeft+value;
+    $("#borderDown").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#up").css("left"));
+    newLeft = actualLeft+value;
+    $("#up").animate({
+      'left':newLeft
+    },speed);
+}
+
+function moveEverythingUp(value){
+    actualTop = parseInt($("#location").css("top"));
+    newTop = actualTop+value;
+    $("#location").animate({
+      'top':newTop
+    },speed);
+    actualTop = parseInt($("#borderTop").css("top"));
+    newTop = actualTop+value;
+    $("#borderTop").animate({
+      'top':newTop
+    },speed);
+    actualTop = parseInt($("#borderLeft").css("top"));
+    newTop = actualTop+value;
+    $("#borderLeft").animate({
+      'top':newTop
+    },speed);
+    actualTop = parseInt($("#borderRight").css("top"));
+    newTop = actualTop+value;
+    $("#borderRight").animate({
+      'top':newTop
+    },speed);
+    actualTop = parseInt($("#borderDown").css("top"));
+    newTop = actualTop+value;
+    $("#borderDown").animate({
+      'top':newTop
+    },speed);
+    actualTop = parseInt($("#up").css("top"));
+    newTop = actualTop+value;
+    $("#up").animate({
+      'top':newTop
+    },speed);
 }
