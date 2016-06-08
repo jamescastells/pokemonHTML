@@ -12,7 +12,7 @@
   position:relative;
 }
 
-#up{
+#up,#down{
   position: relative;
   float: left;
   background-image:url("../tiles/ground.png");
