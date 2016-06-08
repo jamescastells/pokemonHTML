@@ -19,7 +19,24 @@ function thereIsBarrier(pos_x, pos_y, where){
 function checkUp(pos_x,pos_y){
     if (pos_y == 0){
       if (north_c!='none'){
-        if (thereIsBarrier(pos_x,pos_y, "up")){
+        if (thereIsBarrier(pos_x,(height_north)/32, "up")){
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+    return true;
+}
+
+function checkDown(pos_x,pos_y){
+    if (pos_y > (height)/32){
+      if (south_c!='none'){
+        if (thereIsBarrier(pos_x,1, "down")){
           return false;
         }
         else {
@@ -72,7 +89,7 @@ document.onkeydown = function(event) {
       });
     }
     else if (key_code==40){ //down
-      if (parseInt($("#location").css("top")) == -(parseInt($("#location").css("height"))-160)){
+      if (checkDown(pos_x,pos_y+1)==false){
         $("#player").css("background-image","url(sprites/down.png)");
         walking=false;
         return;
@@ -166,6 +183,7 @@ function obtainPlayerPosition(){
 function refreshPlayerPositionData(){
   [l,t] = obtainPlayerPosition();
   $("#positionOfPlayer").text(l+ ", " + t);
+  $("#locationOfPlayer").text(location_name);
 }
 
 function moveEverythingLeft(value){
@@ -197,6 +215,11 @@ function moveEverythingLeft(value){
     actualLeft = parseInt($("#up").css("left"));
     newLeft = actualLeft+value;
     $("#up").animate({
+      'left':newLeft
+    },speed);
+    actualLeft = parseInt($("#down").css("left"));
+    newLeft = actualLeft+value;
+    $("#down").animate({
       'left':newLeft
     },speed);
 }
@@ -231,5 +254,10 @@ function moveEverythingUp(value){
     newTop = actualTop+value;
     $("#up").animate({
       'top':newTop
+    },speed);
+    actualLeft = parseInt($("#down").css("top"));
+    newLeft = actualLeft+value;
+    $("#down").animate({
+      'top':newLeft
     },speed);
 }

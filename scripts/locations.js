@@ -4,6 +4,10 @@ var north_c = "none";
 var south_c = "none";
 var screen_height;
 var screen_width;
+var location_name;
+
+var width_north=-1, height_north=-1;
+var width_south=-1, height_south=-1;
 
 function loadDataOfPlayer(){
   var rawFile = new XMLHttpRequest();
@@ -66,6 +70,7 @@ function loadLocation(name, start){
         {
             if(rawFile.status === 200 || rawFile.status == 0)
             {
+                location_name = name.split(".")[0].replace("_"," ").replace("locations/","").toUpperCase();
                 var lines = rawFile.responseText.split('\n');
                 for(var line = 0; line < lines.length; line++){
                   line_txt = lines[line];
@@ -134,6 +139,9 @@ function loadLocation(name, start){
     if (north_c!="none"){
       loadConnector("locations/"+north_c,"#up",north_adj);
     }
+    if (south_c!="none"){
+      loadConnector("locations/"+south_c,"#down",south_adj);
+    }
 }
 
 function loadConnector(name,where,adjustement){
@@ -189,10 +197,20 @@ function loadConnector(name,where,adjustement){
                 $(where).css("width",width_l);
                 $(where).css("height",height_l);
                 actualLeft = parseInt($("#location").css("left"));
+                [pl_x,pl_y] = obtainPlayerPosition();
+                if (pl_y*32 > height)
+                  pl_y = 1;
                 if (where == "#up"){
-                  [pl_x,pl_y] = obtainPlayerPosition();
-                  $(where).css("top",-height_l - height - 32*(pl_y+8));
+                  $(where).css("top",-height_l - height-screen_height -pl_y*32 +32);
                   $(where).css("left",actualLeft + adjustement*32);
+                  width_north = width_l * 32;
+                  height_north = height_l *32;
+                }
+                if (where == "#down"){
+                  $(where).css("top",-height_l -height + screen_height+32);
+                  $(where).css("left",actualLeft + adjustement*32);
+                  width_south = width_l * 32;
+                  height_south = height_l *32;
                 }
             }
         }
@@ -217,6 +235,20 @@ function checkIfLocationChanged(){
     $("#borderLeft").css("top",-height);
     $("#borderLeft").css("height",height + screen_height/2 - 16);
   }
+  if (pl_y > height/32  && south_c != "none"){ // has gone to the south connector
+    emptyConnectors();
+    loadLocation("locations/"+south_c, false);
+    $("#location").css("top",(screen_height/2)-16);
+    $("#player").css("top",-8);
+    $("#borderTop").css("top",-32);
+    $("#borderRight").css("left",width - (pl_x*32) + 32);
+    $("#borderRight").css("height",height + screen_height/2 - 16);
+    $("#borderRight").css("top",-64);
+    $("#borderDown").css("top",-height + 3*screen_height/2 - 16);
+    $("#borderLeft").css("left",-width+(pl_x*32)-32);
+    $("#borderLeft").css("top",-32);
+    $("#borderLeft").css("height",height + screen_height/2 - 16);
+  }
 }
 
 function emptyLocation(){
@@ -234,4 +266,7 @@ function emptyConnectors(){
   $("#up").empty();
   $("#up").css("width",0);
   $("#up").css("height",0);
+  $("#down").empty();
+  $("#down").css("width",0);
+  $("#down").css("height",0);
 }
