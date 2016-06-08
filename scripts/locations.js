@@ -241,11 +241,11 @@ function checkIfLocationChanged(){
     $("#location").css("top",(screen_height/2)-16);
     $("#player").css("top",-8);
     $("#borderTop").css("top",-32);
-    $("#borderRight").css("left",width - (pl_x*32) + 32);
+    $("#borderRight").css("left",width - pl_x*32);
     $("#borderRight").css("height",height + screen_height/2 - 16);
     $("#borderRight").css("top",-64);
     $("#borderDown").css("top",-height + 3*screen_height/2 - 16);
-    $("#borderLeft").css("left",-width+(pl_x*32)-32);
+    $("#borderLeft").css("left",-(pl_x-1)*32);
     $("#borderLeft").css("top",-32);
     $("#borderLeft").css("height",height + screen_height/2 - 16);
   }
