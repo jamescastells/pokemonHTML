@@ -114,6 +114,8 @@ function loadLocation(name, start){
                       $(elemento).addClass("water");
                     else if (property.indexOf("grass")>-1)
                       $(elemento).addClass("grass");
+                    else if (property.indexOf("door")>-1)
+                      $(elemento).addClass("door");
                     else {
                       $(elemento).addClass("barrier");
                     }
