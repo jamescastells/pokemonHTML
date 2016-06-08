@@ -1,7 +1,7 @@
 var walkUp='right';
 var walkDown='right';
 var walking=false;
-var speed=150;
+var speed=200;
 
 function thereIsBarrier(pos_x, pos_y, where){
   var thereIs = false;
@@ -50,21 +50,27 @@ function checkDown(pos_x,pos_y){
     return true;
 }
 
-document.onkeydown = function(event) {
-    if (walking)
-      return;
-    walking = true;
-    var key_press = String.fromCharCode(event.keyCode);
-  	var key_code = event.keyCode;
+var walking_down = false;
+var walking_up = false;
+var walking_left = false;
+var walking_right = false;
+
+function movePlayer(key_c){
+    //walking = true;
+    var key_press = String.fromCharCode(key_c);
+    var key_code = key_c;
     [pos_x,pos_y] = obtainPlayerPosition();
-    if (key_code==38){ //up
+    if (walking_up && walking==false){ //up
+      walking = true;
       if (checkUp(pos_x,pos_y-1)==false){
         $("#player").css("background-image","url(sprites/up.png)");
+        walking_up=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x, pos_y-1,"location")){
         $("#player").css("background-image","url(sprites/up.png)");
+        walking_up=false;
         walking=false;
         return;
       }
@@ -85,17 +91,21 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/up.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          walking = false;
+          movePlayer(key_c);      // move Player until the gamer stops pressing
       });
     }
-    else if (key_code==40){ //down
+    else if (walking_down && walking==false){ //down
+      walking = true;
       if (checkDown(pos_x,pos_y+1)==false){
         $("#player").css("background-image","url(sprites/down.png)");
+        walking_down=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x,pos_y+1,"location")){
         $("#player").css("background-image","url(sprites/down.png)");
+        walking_down=false;
         walking=false;
         return;
       }
@@ -117,16 +127,20 @@ document.onkeydown = function(event) {
           checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
+          movePlayer(key_c);
       });
     }
-    else if (key_code==37){ //left
+    else if (walking_left && walking==false){ //left
+      walking=true;
       if (parseInt($("#location").css("left")) == 128){
         $("#player").css("background-image","url(sprites/left.png)");
+        walking_left=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x-1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/left.png)");
+        walking_left=false;
         walking=false;
         return;
       }
@@ -141,16 +155,20 @@ document.onkeydown = function(event) {
           checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
+          movePlayer(key_c);
       });
     }
-    else if (key_code==39){ //right
+    else if (walking_right && walking==false){ //right
+      walking=true;
       if (parseInt($("#location").css("left")) == -(parseInt($("#location").css("width")) - 160)){
         $("#player").css("background-image","url(sprites/right.png)");
+        walking_right=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x+1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/right.png)");
+        walking_right=false;
         walking=false;
         return;
       }
@@ -165,14 +183,37 @@ document.onkeydown = function(event) {
           checkIfLocationChanged();
           refreshPlayerPositionData();
           walking=false;
+          movePlayer(key_c);
       });
     }
-    else{
-      walking=false;
-      return;
-    }
-
 }
+
+$(window).keydown(function(e){
+  if (e.which >=37 || e.which <=40){
+      if (walking_down || walking_up || walking_left || walking_right || walking) // if already walking, ignore any input
+        return;
+      if (e.which==37)
+        walking_left = true;
+      else if (e.which==38)
+        walking_up = true;
+      else if (e.which==39)
+        walking_right = true;
+      else if (e.which == 40)
+        walking_down = true;
+      movePlayer(e.which);
+  }
+});
+
+$(window).keyup(function(e){
+    if (e.which >=37 || e.which <=40){
+      walking_down=false;
+      walking_up=false;
+      walking_left=false;
+      walking_right=false;
+    }
+});
+
+//document.onkeydown = movePlayer(event.keyCode);
 
 function obtainPlayerPosition(){
   l= (parseInt($("#player").css("left"))-2 + 32)/32;
