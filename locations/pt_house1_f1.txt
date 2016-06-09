@@ -67,3 +67,4 @@ ground_house.png:5,8
 ground_house.png:6,8
 bottom_plant.png:7,8
 ground_house.png:8,8
+sign:0,4,6

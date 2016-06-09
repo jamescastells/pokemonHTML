@@ -2,6 +2,7 @@ var walkUp='right';
 var walkDown='right';
 var walking=false;
 var speed=200;
+var facing='down';
 
 function thereIsBarrier(pos_x, pos_y, where){
   var thereIs = false;
@@ -62,6 +63,7 @@ function movePlayer(key_c){
     [pos_x,pos_y] = obtainPlayerPosition();
     if (walking_up && walking==false){ //up
       walking = true;
+      facing = 'up';
       if (checkUp(pos_x,pos_y-1)==false){
         $("#player").css("background-image","url(sprites/up.png)");
         walking_up=false;
@@ -97,6 +99,7 @@ function movePlayer(key_c){
     }
     else if (walking_down && walking==false){ //down
       walking = true;
+      facing = 'down';
       if (checkDown(pos_x,pos_y+1)==false){
         $("#player").css("background-image","url(sprites/down.png)");
         walking_down=false;
@@ -132,6 +135,7 @@ function movePlayer(key_c){
     }
     else if (walking_left && walking==false){ //left
       walking=true;
+      facing = 'left';
       if (parseInt($("#location").css("left")) == 128){
         $("#player").css("background-image","url(sprites/left.png)");
         walking_left=false;
@@ -160,6 +164,7 @@ function movePlayer(key_c){
     }
     else if (walking_right && walking==false){ //right
       walking=true;
+      facing='right';
       if (parseInt($("#location").css("left")) == -(parseInt($("#location").css("width")) - 160)){
         $("#player").css("background-image","url(sprites/right.png)");
         walking_right=false;
@@ -189,7 +194,7 @@ function movePlayer(key_c){
 }
 
 $(window).keydown(function(e){
-  if (e.which >=37 || e.which <=40){
+  if (e.which >=37 && e.which <=40){
       if (walking_down || walking_up || walking_left || walking_right || walking) // if already walking, ignore any input
         return;
       if (e.which==37)
@@ -202,6 +207,42 @@ $(window).keydown(function(e){
         walking_down = true;
       movePlayer(e.which);
   }
+  if (e.which == 88){
+    if (walking)
+      return;
+    if (facing == 'up'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x,pos_y-1);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'down'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x,pos_y+1);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'left'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x-1,pos_y);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'right'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x+1,pos_y);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+  }
 });
 
 $(window).keyup(function(e){
@@ -213,7 +254,19 @@ $(window).keyup(function(e){
     }
 });
 
-//document.onkeydown = movePlayer(event.keyCode);
+function thereIsSign(pos_x,pos_y){
+  var id_sign = -1;
+  $("#location").find(".sign").each(function(index){
+    sign_l = parseInt($(this).css("left"))/32 + 1;
+    sign_t = parseInt($(this).css("top"))/32 + 1;
+    if (sign_l == pos_x && sign_t == pos_y){
+        id_v = $(this).prop("id").split("-");
+        id_sign = id_v[1];
+    }
+
+  });
+  return id_sign;
+}
 
 function obtainPlayerPosition(){
   l= (parseInt($("#player").css("left"))-2 + 32)/32;

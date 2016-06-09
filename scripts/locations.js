@@ -120,6 +120,21 @@ function loadLocation(name, start){
                       $(elemento).addClass("barrier");
                     }
                   }
+                  else if (property.indexOf("sign")>-1){
+                    sign_info = value.split(",");
+                    id_sign = sign_info[0];
+                    pos_x = sign_info[1];
+                    pos_y = sign_info[2];
+                    elemento = document.createElement("div");
+                    elemento.style.width = '32px';
+                    elemento.style.height = '32px';
+                    $("#location").append(elemento);
+                    elemento.style.position = 'absolute';
+                    elemento.style.left = pos_x*32 - 32;
+                    elemento.style.top = pos_y*32 - 32;
+                    $(elemento).addClass("sign");
+                    $(elemento).prop("id", "sign-"+id_sign);
+                  }
                 }
                 $("#location").css("width",width);
                 $("#location").css("height",height);
@@ -272,3 +287,29 @@ function emptyConnectors(){
   $("#down").css("width",0);
   $("#down").css("height",0);
 }
+
+function obtainMessage(id_sign){
+    var txt_to_return='';
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", "events/scripts.txt", false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+              var lines = rawFile.responseText.split('\n');
+              for(var line = 0; line < lines.length; line++){
+                line_txt = lines[line];
+                prop_val = line_txt.split(":");
+                property = prop_val[0];
+                value = prop_val[1];
+                if (property == id_sign)
+                  txt_to_return=value;
+              }
+            }
+          }
+      }
+      rawFile.send(null);
+      return txt_to_return;
+  }
