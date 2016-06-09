@@ -5,6 +5,7 @@ var south_c = "none";
 var screen_height;
 var screen_width;
 var location_name;
+var music = "none";
 
 var width_north=-1, height_north=-1;
 var width_south=-1, height_south=-1;
@@ -60,6 +61,8 @@ function loadDataOfPlayer(){
 
 function loadLocation(name, start){
 
+  var musicOfLocation= "none";
+
   emptyLocation();
 
   var rawFile = new XMLHttpRequest();
@@ -95,6 +98,9 @@ function loadLocation(name, start){
                     info_connect = value.split(",");
                     south_c = info_connect[0];
                     south_adj = info_connect[1];
+                  }
+                  if (property == "music"){
+                    musicOfLocation = value;
                   }
                   if (property.indexOf("png")>-1){
                     elemento = document.createElement("div");
@@ -166,6 +172,10 @@ function loadLocation(name, start){
     }
     if (south_c!="none"){
       loadConnector("locations/"+south_c,"#down",south_adj);
+    }
+    if (musicOfLocation != music){
+      music = musicOfLocation;
+      playMusic("sounds/"+music);
     }
 }
 
@@ -350,3 +360,8 @@ function obtainMessage(id_sign){
         rawFile.send(null);
         return [warpToReturn,nameOfMap];
     }
+
+  function playMusic(name){
+    var audio = new Audio(name);
+    audio.play();
+  }

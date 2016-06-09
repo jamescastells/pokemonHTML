@@ -363,3 +363,4 @@ door.png:13,12
 houseDownTwoWindows.png:14,12
 houseDownTwoWindows.png:15,12
 buildingDownRight.png:16,12
+music:pallet_town.mp3
