@@ -122,11 +122,11 @@ function loadLocation(name, start){
                       $(elemento).addClass("barrier");
                     }
                   }
-                  else if (property.indexOf("sign")>-1){
-                    sign_info = value.split(",");
-                    id_sign = sign_info[0];
-                    pos_x = sign_info[1];
-                    pos_y = sign_info[2];
+                  else if (property.indexOf("sign")>-1 || property.indexOf("warp")>-1){
+                    element_info = value.split(",");
+                    id_element = element_info[0];
+                    pos_x = element_info[1];
+                    pos_y = element_info[2];
                     elemento = document.createElement("div");
                     elemento.style.width = '32px';
                     elemento.style.height = '32px';
@@ -134,8 +134,14 @@ function loadLocation(name, start){
                     elemento.style.position = 'absolute';
                     elemento.style.left = pos_x*32 - 32;
                     elemento.style.top = pos_y*32 - 32;
-                    $(elemento).addClass("sign");
-                    $(elemento).prop("id", "sign-"+id_sign);
+                    if (property.indexOf("sign")>-1){
+                      $(elemento).addClass("sign");
+                      $(elemento).prop("id", "sign-"+id_element);
+                    }
+                    if (property.indexOf("warp")>-1){
+                      $(elemento).addClass("warp");
+                      $(elemento).prop("id", "warp-"+id_element);
+                    }
                   }
                 }
                 $("#location").css("width",width);
@@ -315,3 +321,32 @@ function obtainMessage(id_sign){
       rawFile.send(null);
       return txt_to_return;
   }
+
+  function obtainWhereToWarp(id_warp){
+      var warpToReturn=-1, namepOfMap = '';
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", "events/warps.txt", false);
+      rawFile.onreadystatechange = function ()
+      {
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status == 0)
+              {
+                var lines = rawFile.responseText.split('\n');
+                for(var line = 0; line < lines.length; line++){
+                  line_txt = lines[line];
+                  prop_val = line_txt.split(",");
+                  property = prop_val[0];
+                  value = prop_val[1];
+                  value2 = prop_val[2];
+                  if (property == id_warp){
+                    nameOfMap=value;
+                    warpToReturn=value2;
+                  }
+                }
+              }
+            }
+        }
+        rawFile.send(null);
+        return [warpToReturn,nameOfMap];
+    }

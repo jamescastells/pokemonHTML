@@ -93,7 +93,7 @@ function movePlayer(key_c){
           $("#player").css("background-image","url(sprites/up.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking = false;
+          checkIfInWarp();
           movePlayer(key_c);      // move Player until the gamer stops pressing
       });
     }
@@ -129,7 +129,7 @@ function movePlayer(key_c){
           $("#player").css("background-image","url(sprites/down.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
           movePlayer(key_c);
       });
     }
@@ -158,7 +158,7 @@ function movePlayer(key_c){
           $("#player").css("background-image","url(sprites/left.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
           movePlayer(key_c);
       });
     }
@@ -187,7 +187,7 @@ function movePlayer(key_c){
           $("#player").css("background-image","url(sprites/right.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
           movePlayer(key_c);
       });
     }
@@ -253,6 +253,36 @@ $(window).keyup(function(e){
       walking_right=false;
     }
 });
+
+function checkIfInWarp(){
+    [pos_x,pos_y] = obtainPlayerPosition();
+    var idWarp = -1;
+    $("#location").find(".warp").each(function(index){
+      warp_l = parseInt($(this).css("left"))/32 + 1;
+      warp_t = parseInt($(this).css("top"))/32 + 1;
+      if (warp_l == pos_x && warp_t == pos_y){
+        idWarp = $(this).prop("id").split("-")[1];
+      }
+    });
+    if (idWarp>-1){
+      [idDestiny,nameOfMap] = obtainWhereToWarp(idWarp);
+      fadeToBlackAndWarp(idDestiny,nameOfMap);
+    }
+    else {
+      walking=false;
+    }
+}
+
+function fadeToBlackAndWarp(idDestiny,nameOfMap){
+  $('#location').find("div").animate({
+       opacity: 0,
+     }, 400, function() {
+         emptyConnectors();
+         loadLocation("locations/"+nameOfMap,false);
+         $('#location').find("div").css("opacity",1);
+         walking=false;
+     });
+}
 
 function thereIsSign(pos_x,pos_y){
   var id_sign = -1;

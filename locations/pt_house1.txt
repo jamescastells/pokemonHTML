@@ -67,3 +67,4 @@ ground_house.png:5,8
 ground_house.png:6,8
 ground_house.png:7,8
 ground_house.png:8,8
+warp:1,8,2
