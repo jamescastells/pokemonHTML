@@ -274,12 +274,16 @@ function checkIfInWarp(){
 }
 
 function fadeToBlackAndWarp(idDestiny,nameOfMap){
-  $('#location').find("div").animate({
-       opacity: 0,
-     }, 400, function() {
+  $('#blackScreen').css("width",screen_width);
+  $('#blackScreen').css("height",screen_height);
+  $('#blackScreen').animate({
+       opacity: 1,
+     }, 300, function() {
          emptyConnectors();
          loadLocation("locations/"+nameOfMap,false);
-         $('#location').find("div").css("opacity",1);
+         $('#blackScreen').css("width",0);
+         $('#blackScreen').css("height",0);
+         $('#blackScreen').css("opacity",0);
          walking=false;
      });
 }
