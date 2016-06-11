@@ -61,11 +61,13 @@ ground_house.png:7,7
 ground_house.png:8,7
 ground_house.png:1,8
 ground_house.png:2,8
-rug-groundHouse.png:3,8
-rug-groundHouse.png:4,8
+rugHouse.png:3,8
+rugHouse.png:4,8
 ground_house.png:5,8
 ground_house.png:6,8
 ground_house.png:7,8
 ground_house.png:8,8
 warp:1,8,2
+warp:2,3,8
+warp:3,4,8
 music:pallet_town.mp3

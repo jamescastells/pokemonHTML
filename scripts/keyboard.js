@@ -3,6 +3,7 @@ var walkDown='right';
 var walking=false;
 var speed=200;
 var facing='down';
+var goDown=false;
 
 function thereIsBarrier(pos_x, pos_y, where){
   var thereIs = false;
@@ -56,10 +57,8 @@ var walking_up = false;
 var walking_left = false;
 var walking_right = false;
 
-function movePlayer(key_c){
+function movePlayer(){
     //walking = true;
-    var key_press = String.fromCharCode(key_c);
-    var key_code = key_c;
     [pos_x,pos_y] = obtainPlayerPosition();
     if (walking_up && walking==false){ //up
       walking = true;
@@ -94,7 +93,7 @@ function movePlayer(key_c){
           checkIfLocationChanged();
           refreshPlayerPositionData();
           checkIfInWarp();
-          movePlayer(key_c);      // move Player until the gamer stops pressing
+          movePlayer();      // move Player until the gamer stops pressing
       });
     }
     else if (walking_down && walking==false){ //down
@@ -104,12 +103,14 @@ function movePlayer(key_c){
         $("#player").css("background-image","url(sprites/down.png)");
         walking_down=false;
         walking=false;
+        checkIfInRugWarp();
         return;
       }
       if (thereIsBarrier(pos_x,pos_y+1,"location")){
         $("#player").css("background-image","url(sprites/down.png)");
         walking_down=false;
         walking=false;
+        checkIfInRugWarp();
         return;
       }
       if (walkDown=='right'){
@@ -130,7 +131,7 @@ function movePlayer(key_c){
           checkIfLocationChanged();
           refreshPlayerPositionData();
           checkIfInWarp();
-          movePlayer(key_c);
+          movePlayer();
       });
     }
     else if (walking_left && walking==false){ //left
@@ -159,7 +160,7 @@ function movePlayer(key_c){
           checkIfLocationChanged();
           refreshPlayerPositionData();
           checkIfInWarp();
-          movePlayer(key_c);
+          movePlayer();
       });
     }
     else if (walking_right && walking==false){ //right
@@ -188,7 +189,7 @@ function movePlayer(key_c){
           checkIfLocationChanged();
           refreshPlayerPositionData();
           checkIfInWarp();
-          movePlayer(key_c);
+          movePlayer();
       });
     }
 }
@@ -205,7 +206,7 @@ $(window).keydown(function(e){
         walking_right = true;
       else if (e.which == 40)
         walking_down = true;
-      movePlayer(e.which);
+      movePlayer();
   }
   if (e.which == 88){
     if (walking)
@@ -254,6 +255,66 @@ $(window).keyup(function(e){
     }
 });
 
+function isInRug(pos_x,pos_y){
+  var found=false;
+  $("#location").find(".rug").each(function(index){
+    rug_l = parseInt($(this).css("left"))/32 + 1;
+    rug_t = parseInt($(this).css("top"))/32 + 1;
+    if (rug_l == pos_x && rug_t == pos_y){
+      found=true;
+    }
+  });
+  return found;
+}
+
+function simulateWalkDown(){
+  walking=true;
+  if (walkDown=='right'){
+    $("#player").css("background-image","url(sprites/walkingDownRight.png)");
+    walkDown='left';
+  }
+  else if (walkDown=='left'){
+    $("#player").css("background-image","url(sprites/walkingDownLeft.png)");
+    walkDown='right';
+  }
+  moveEverythingUp(-32);
+  actualTop = parseInt($("#player").css("top"));
+  newTop = actualTop+32;
+  $("#player").animate({
+      'top':newTop
+  },speed,function(){
+      $("#player").css("background-image","url(sprites/down.png)");
+      checkIfLocationChanged();
+      refreshPlayerPositionData();
+      walking=false;
+  });
+}
+
+function checkIfInRugWarp(){
+  [pos_x,pos_y] = obtainPlayerPosition();
+  var idWarp = -1;
+  $("#location").find(".warp").each(function(index){
+    warp_l = parseInt($(this).css("left"))/32 + 1;
+    warp_t = parseInt($(this).css("top"))/32 + 1;
+    if (warp_l == pos_x && warp_t == pos_y){
+      idWarp = $(this).prop("id").split("-")[1];
+    }
+  });
+  if (idWarp>-1){
+    if (isInRug(pos_x,pos_y)==true){
+      [new_x,new_y,nameOfMap] = obtainWhereToWarp(idWarp);
+      goDown=true;
+      fadeToBlackAndWarp(new_x,new_y,nameOfMap);
+    }
+    else{
+      walking=false;
+    }
+  }
+  else {
+    walking=false;
+  }
+}
+
 function checkIfInWarp(){
     [pos_x,pos_y] = obtainPlayerPosition();
     var idWarp = -1;
@@ -265,15 +326,20 @@ function checkIfInWarp(){
       }
     });
     if (idWarp>-1){
-      [idDestiny,nameOfMap] = obtainWhereToWarp(idWarp);
-      fadeToBlackAndWarp(idDestiny,nameOfMap);
+      if (isInRug(pos_x,pos_y)==false){
+        [new_x,new_y,nameOfMap] = obtainWhereToWarp(idWarp);
+        fadeToBlackAndWarp(new_x,new_y,nameOfMap);
+      }
+      else{
+        walking=false;
+      }
     }
     else {
       walking=false;
     }
 }
 
-function fadeToBlackAndWarp(idDestiny,nameOfMap){
+function fadeToBlackAndWarp(new_x,new_y,nameOfMap){
   $('#blackScreen').css("width",screen_width);
   $('#blackScreen').css("height",screen_height);
   $('#blackScreen').animate({
@@ -281,10 +347,19 @@ function fadeToBlackAndWarp(idDestiny,nameOfMap){
      }, 300, function() {
          emptyConnectors();
          loadLocation("locations/"+nameOfMap,false);
+         positionPlayer(new_x,new_y);
+         loadConnectors();
+         refreshPlayerPositionData();
          $('#blackScreen').css("width",0);
          $('#blackScreen').css("height",0);
          $('#blackScreen').css("opacity",0);
-         walking=false;
+         if (goDown){
+            simulateWalkDown();
+            goDown=false;
+         }
+         else{
+           walking=false;
+         }
      });
 }
 
