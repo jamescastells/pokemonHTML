@@ -152,7 +152,7 @@ function loadLocation(name, start){
     }
     if (musicOfLocation != music){
       music = musicOfLocation;
-      playMusic("sounds/"+music);
+      playMusic();
     }
 }
 
@@ -406,7 +406,9 @@ function obtainMessage(id_sign){
         return [new_x,new_y,nameOfMap];
     }
 
-  function playMusic(name){
-    var audio = new Audio(name);
-    audio.play();
+
+  function playMusic(){
+    s_o_g = document.getElementById("soundOfGame");
+    s_o_g.src = "sounds/"+music;
+    s_o_g.play();
   }

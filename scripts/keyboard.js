@@ -268,7 +268,6 @@ function isInRug(pos_x,pos_y){
 }
 
 function simulateWalkDown(){
-  walking=true;
   if (walkDown=='right'){
     $("#player").css("background-image","url(sprites/walkingDownRight.png)");
     walkDown='left';
@@ -302,16 +301,11 @@ function checkIfInRugWarp(){
   });
   if (idWarp>-1){
     if (isInRug(pos_x,pos_y)==true){
+      walking=true;
       [new_x,new_y,nameOfMap] = obtainWhereToWarp(idWarp);
       goDown=true;
       fadeToBlackAndWarp(new_x,new_y,nameOfMap);
     }
-    else{
-      walking=false;
-    }
-  }
-  else {
-    walking=false;
   }
 }
 
