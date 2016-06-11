@@ -2,9 +2,12 @@ var border;
 var size, width, height;
 var north_c = "none";
 var south_c = "none";
+var north_adj = 0;
+var south_adj = 0;
 var screen_height;
 var screen_width;
 var location_name;
+var music = "none";
 
 var width_north=-1, height_north=-1;
 var width_south=-1, height_south=-1;
@@ -28,28 +31,7 @@ function loadDataOfPlayer(){
                     pos = value.split(",");
                     x = parseInt(pos[0]);
                     y = parseInt(pos[1]);
-                    screen_height = parseInt($("#screen").css("height"));
-                    screen_width = parseInt($("#screen").css("width"));
-                    $("#location").css("left", (screen_width/2) - x*32);
-                    $("#location").css("top",  (screen_height/2) - y*32 + 16);
-                    location_top = parseInt($("#location").css("top"));
-                    location_left = parseInt($("#location").css("left"));
-                    location_width = parseInt($("#location").css("width"));
-                    location_height = parseInt($("#location").css("height"));
-                    $("#player").css("top", screen_height/2 - location_top - 24);
-                    $("#player").css("left", screen_width/2 - location_left - 30);
-                    $("#borderTop").css("top", -y*32);
-                    $("#borderTop").css("left", -x*32 + 32);
-                    $("#borderTop").css("width",location_width + screen_width - 32);
-                    $("#borderLeft").css("left", -x*32 + 32);
-                    $("#borderLeft").css("top", -y*32);
-                    $("#borderLeft").css("height", location_height + screen_height/2 - 16);
-                    $("#borderRight").css("left", location_width - 32*x + 32);
-                    $("#borderRight").css("height", location_height + screen_height/2 - 16);
-                    $("#borderRight").css("top", -y*32);
-                    $("#borderDown").css("left", 160 - x*32);
-                    $("#borderDown").css("top", -y*32 - 128);
-                    $("#borderDown").css("width",location_width + screen_width - 32);
+                    positionPlayer(x,y);
                   }
                 }
               }
@@ -59,6 +41,8 @@ function loadDataOfPlayer(){
 }
 
 function loadLocation(name, start){
+
+  var musicOfLocation= "none";
 
   emptyLocation();
 
@@ -96,6 +80,9 @@ function loadLocation(name, start){
                     south_c = info_connect[0];
                     south_adj = info_connect[1];
                   }
+                  if (property == "music"){
+                    musicOfLocation = value;
+                  }
                   if (property.indexOf("png")>-1){
                     elemento = document.createElement("div");
                     elemento.style.width = '32px';
@@ -116,8 +103,33 @@ function loadLocation(name, start){
                       $(elemento).addClass("grass");
                     else if (property.indexOf("door")>-1)
                       $(elemento).addClass("door");
+                    else if (property.indexOf("stairs")>-1)
+                      $(elemento).addClass("stairs");
+                    else if (property.indexOf("rug")>-1)
+                      $(elemento).addClass("rug");
                     else {
                       $(elemento).addClass("barrier");
+                    }
+                  }
+                  else if (property.indexOf("sign")>-1 || property.indexOf("warp")>-1){
+                    element_info = value.split(",");
+                    id_element = element_info[0];
+                    pos_x = element_info[1];
+                    pos_y = element_info[2];
+                    elemento = document.createElement("div");
+                    elemento.style.width = '32px';
+                    elemento.style.height = '32px';
+                    $("#location").append(elemento);
+                    elemento.style.position = 'absolute';
+                    elemento.style.left = pos_x*32 - 32;
+                    elemento.style.top = pos_y*32 - 32;
+                    if (property.indexOf("sign")>-1){
+                      $(elemento).addClass("sign");
+                      $(elemento).prop("id", "sign-"+id_element);
+                    }
+                    if (property.indexOf("warp")>-1){
+                      $(elemento).addClass("warp");
+                      $(elemento).prop("id", "warp-"+id_element);
                     }
                   }
                 }
@@ -136,14 +148,22 @@ function loadLocation(name, start){
     if (start == true){
       loadDataOfPlayer();
       refreshPlayerPositionData();
+      loadConnectors();
     }
-    emptyConnectors();
-    if (north_c!="none"){
-      loadConnector("locations/"+north_c,"#up",north_adj);
+    if (musicOfLocation != music){
+      music = musicOfLocation;
+      playMusic("sounds/"+music);
     }
-    if (south_c!="none"){
-      loadConnector("locations/"+south_c,"#down",south_adj);
-    }
+}
+
+function loadConnectors(){
+  emptyConnectors();
+  if (north_c!="none"){
+    loadConnector("locations/"+north_c,"#up",north_adj);
+  }
+  if (south_c!="none"){
+    loadConnector("locations/"+south_c,"#down",south_adj);
+  }
 }
 
 function loadConnector(name,where,adjustement){
@@ -220,6 +240,33 @@ function loadConnector(name,where,adjustement){
     rawFile.send(null);
 }
 
+function positionPlayer(new_x,new_y){
+  x = new_x;
+  y = new_y;
+  screen_height = parseInt($("#screen").css("height"));
+  screen_width = parseInt($("#screen").css("width"));
+  $("#location").css("left", (screen_width/2) - x*32);
+  $("#location").css("top",  (screen_height/2) - y*32 + 16);
+  location_top = parseInt($("#location").css("top"));
+  location_left = parseInt($("#location").css("left"));
+  location_width = parseInt($("#location").css("width"));
+  location_height = parseInt($("#location").css("height"));
+  $("#player").css("top", screen_height/2 - location_top - 24);
+  $("#player").css("left", screen_width/2 - location_left - 30);
+  $("#borderTop").css("top", -y*32);
+  $("#borderTop").css("left", -x*32 + 32);
+  $("#borderTop").css("width",location_width + screen_width - 32);
+  $("#borderLeft").css("left", -x*32 + 32);
+  $("#borderLeft").css("top", -y*32);
+  $("#borderLeft").css("height", location_height + screen_height/2 - 16);
+  $("#borderRight").css("left", location_width - 32*x + 32);
+  $("#borderRight").css("height", location_height + screen_height/2 - 16);
+  $("#borderRight").css("top", -y*32);
+  $("#borderDown").css("left", 160 - x*32);
+  $("#borderDown").css("top", -y*32 - 128);
+  $("#borderDown").css("width",location_width + screen_width - 32);
+}
+
 function checkIfLocationChanged(){
 
   [pl_x,pl_y] = obtainPlayerPosition();
@@ -236,6 +283,7 @@ function checkIfLocationChanged(){
     $("#borderLeft").css("left",-width+(pl_x*32)-32);
     $("#borderLeft").css("top",-height);
     $("#borderLeft").css("height",height + screen_height/2 - 16);
+    loadConnectors();
   }
   if (pl_y > height/32  && south_c != "none"){ // has gone to the south connector
     emptyConnectors();
@@ -250,6 +298,7 @@ function checkIfLocationChanged(){
     $("#borderLeft").css("left",-(pl_x-1)*32);
     $("#borderLeft").css("top",-32);
     $("#borderLeft").css("height",height + screen_height/2 - 16);
+    loadConnectors();
   }
 }
 
@@ -272,3 +321,92 @@ function emptyConnectors(){
   $("#down").css("width",0);
   $("#down").css("height",0);
 }
+
+function obtainMessage(id_sign){
+    var txt_to_return='';
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", "events/scripts.txt", false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+              var lines = rawFile.responseText.split('\n');
+              for(var line = 0; line < lines.length; line++){
+                line_txt = lines[line];
+                prop_val = line_txt.split(":");
+                property = prop_val[0];
+                value = prop_val[1];
+                if (property == id_sign)
+                  txt_to_return=value;
+              }
+            }
+          }
+      }
+      rawFile.send(null);
+      return txt_to_return;
+  }
+
+  function obtainWhereToWarp(id_warp){
+      var warpToReturn=-1, namepOfMap = '', new_x=1, new_y=1;
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", "events/warps.txt", false);
+      rawFile.onreadystatechange = function ()
+      {
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status == 0)
+              {
+                var lines = rawFile.responseText.split('\n');
+                for(var line = 0; line < lines.length; line++){
+                  line_txt = lines[line];
+                  prop_val = line_txt.split(",");
+                  property = prop_val[0];
+                  value = prop_val[1];
+                  value2 = prop_val[2];
+                  if (property == id_warp){
+                    nameOfMap=value;
+                    warpToReturn=value2;
+                  }
+                }
+              }
+            }
+        }
+        rawFile.send(null);
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", "locations/"+nameOfMap, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                  var lines = rawFile.responseText.split('\n');
+                  for(var line = 0; line < lines.length; line++){
+                      prop_val = lines[line].split(":");
+                      property = prop_val[0];
+                      value = prop_val[1];
+                      if (property=="warp"){
+                          value_v = value.split(",");
+                          idw = value_v[0];
+                          xw = value_v[1];
+                          yw = value_v[2];
+
+                          if (idw == warpToReturn){
+                            new_x = xw;
+                            new_y = yw;
+                          }
+                      }
+                  }
+                }
+            }
+        }
+        rawFile.send(null);
+        return [new_x,new_y,nameOfMap];
+    }
+
+  function playMusic(name){
+    var audio = new Audio(name);
+    audio.play();
+  }

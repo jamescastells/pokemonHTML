@@ -1,7 +1,9 @@
 var walkUp='right';
 var walkDown='right';
 var walking=false;
-var speed=150;
+var speed=200;
+var facing='down';
+var goDown=false;
 
 function thereIsBarrier(pos_x, pos_y, where){
   var thereIs = false;
@@ -50,21 +52,26 @@ function checkDown(pos_x,pos_y){
     return true;
 }
 
-document.onkeydown = function(event) {
-    if (walking)
-      return;
-    walking = true;
-    var key_press = String.fromCharCode(event.keyCode);
-  	var key_code = event.keyCode;
+var walking_down = false;
+var walking_up = false;
+var walking_left = false;
+var walking_right = false;
+
+function movePlayer(){
+    //walking = true;
     [pos_x,pos_y] = obtainPlayerPosition();
-    if (key_code==38){ //up
+    if (walking_up && walking==false){ //up
+      walking = true;
+      facing = 'up';
       if (checkUp(pos_x,pos_y-1)==false){
         $("#player").css("background-image","url(sprites/up.png)");
+        walking_up=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x, pos_y-1,"location")){
         $("#player").css("background-image","url(sprites/up.png)");
+        walking_up=false;
         walking=false;
         return;
       }
@@ -85,18 +92,25 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/up.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
+          movePlayer();      // move Player until the gamer stops pressing
       });
     }
-    else if (key_code==40){ //down
+    else if (walking_down && walking==false){ //down
+      walking = true;
+      facing = 'down';
       if (checkDown(pos_x,pos_y+1)==false){
         $("#player").css("background-image","url(sprites/down.png)");
+        walking_down=false;
         walking=false;
+        checkIfInRugWarp();
         return;
       }
       if (thereIsBarrier(pos_x,pos_y+1,"location")){
         $("#player").css("background-image","url(sprites/down.png)");
+        walking_down=false;
         walking=false;
+        checkIfInRugWarp();
         return;
       }
       if (walkDown=='right'){
@@ -116,17 +130,22 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/down.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
+          movePlayer();
       });
     }
-    else if (key_code==37){ //left
+    else if (walking_left && walking==false){ //left
+      walking=true;
+      facing = 'left';
       if (parseInt($("#location").css("left")) == 128){
         $("#player").css("background-image","url(sprites/left.png)");
+        walking_left=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x-1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/left.png)");
+        walking_left=false;
         walking=false;
         return;
       }
@@ -140,17 +159,22 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/left.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
+          movePlayer();
       });
     }
-    else if (key_code==39){ //right
+    else if (walking_right && walking==false){ //right
+      walking=true;
+      facing='right';
       if (parseInt($("#location").css("left")) == -(parseInt($("#location").css("width")) - 160)){
         $("#player").css("background-image","url(sprites/right.png)");
+        walking_right=false;
         walking=false;
         return;
       }
       if (thereIsBarrier(pos_x+1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/right.png)");
+        walking_right=false;
         walking=false;
         return;
       }
@@ -164,14 +188,193 @@ document.onkeydown = function(event) {
           $("#player").css("background-image","url(sprites/right.png)");
           checkIfLocationChanged();
           refreshPlayerPositionData();
-          walking=false;
+          checkIfInWarp();
+          movePlayer();
       });
+    }
+}
+
+$(window).keydown(function(e){
+  if (e.which >=37 && e.which <=40){
+      if (walking_down || walking_up || walking_left || walking_right || walking) // if already walking, ignore any input
+        return;
+      if (e.which==37)
+        walking_left = true;
+      else if (e.which==38)
+        walking_up = true;
+      else if (e.which==39)
+        walking_right = true;
+      else if (e.which == 40)
+        walking_down = true;
+      movePlayer();
+  }
+  if (e.which == 88){
+    if (walking)
+      return;
+    if (facing == 'up'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x,pos_y-1);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'down'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x,pos_y+1);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'left'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x-1,pos_y);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+    if (facing == 'right'){
+      [pos_x, pos_y] = obtainPlayerPosition();
+      id_sign = thereIsSign(pos_x+1,pos_y);
+      if (id_sign>-1){
+        message = obtainMessage(id_sign);
+        alert(message);
+      }
+    }
+  }
+});
+
+$(window).keyup(function(e){
+    if (e.which >=37 || e.which <=40){
+      walking_down=false;
+      walking_up=false;
+      walking_left=false;
+      walking_right=false;
+    }
+});
+
+function isInRug(pos_x,pos_y){
+  var found=false;
+  $("#location").find(".rug").each(function(index){
+    rug_l = parseInt($(this).css("left"))/32 + 1;
+    rug_t = parseInt($(this).css("top"))/32 + 1;
+    if (rug_l == pos_x && rug_t == pos_y){
+      found=true;
+    }
+  });
+  return found;
+}
+
+function simulateWalkDown(){
+  walking=true;
+  if (walkDown=='right'){
+    $("#player").css("background-image","url(sprites/walkingDownRight.png)");
+    walkDown='left';
+  }
+  else if (walkDown=='left'){
+    $("#player").css("background-image","url(sprites/walkingDownLeft.png)");
+    walkDown='right';
+  }
+  moveEverythingUp(-32);
+  actualTop = parseInt($("#player").css("top"));
+  newTop = actualTop+32;
+  $("#player").animate({
+      'top':newTop
+  },speed,function(){
+      $("#player").css("background-image","url(sprites/down.png)");
+      checkIfLocationChanged();
+      refreshPlayerPositionData();
+      walking=false;
+  });
+}
+
+function checkIfInRugWarp(){
+  [pos_x,pos_y] = obtainPlayerPosition();
+  var idWarp = -1;
+  $("#location").find(".warp").each(function(index){
+    warp_l = parseInt($(this).css("left"))/32 + 1;
+    warp_t = parseInt($(this).css("top"))/32 + 1;
+    if (warp_l == pos_x && warp_t == pos_y){
+      idWarp = $(this).prop("id").split("-")[1];
+    }
+  });
+  if (idWarp>-1){
+    if (isInRug(pos_x,pos_y)==true){
+      [new_x,new_y,nameOfMap] = obtainWhereToWarp(idWarp);
+      goDown=true;
+      fadeToBlackAndWarp(new_x,new_y,nameOfMap);
     }
     else{
       walking=false;
-      return;
+    }
+  }
+  else {
+    walking=false;
+  }
+}
+
+function checkIfInWarp(){
+    [pos_x,pos_y] = obtainPlayerPosition();
+    var idWarp = -1;
+    $("#location").find(".warp").each(function(index){
+      warp_l = parseInt($(this).css("left"))/32 + 1;
+      warp_t = parseInt($(this).css("top"))/32 + 1;
+      if (warp_l == pos_x && warp_t == pos_y){
+        idWarp = $(this).prop("id").split("-")[1];
+      }
+    });
+    if (idWarp>-1){
+      if (isInRug(pos_x,pos_y)==false){
+        [new_x,new_y,nameOfMap] = obtainWhereToWarp(idWarp);
+        fadeToBlackAndWarp(new_x,new_y,nameOfMap);
+      }
+      else{
+        walking=false;
+      }
+    }
+    else {
+      walking=false;
+    }
+}
+
+function fadeToBlackAndWarp(new_x,new_y,nameOfMap){
+  $('#blackScreen').css("width",screen_width);
+  $('#blackScreen').css("height",screen_height);
+  $('#blackScreen').animate({
+       opacity: 1,
+     }, 300, function() {
+         emptyConnectors();
+         loadLocation("locations/"+nameOfMap,false);
+         positionPlayer(new_x,new_y);
+         loadConnectors();
+         refreshPlayerPositionData();
+         $('#blackScreen').css("width",0);
+         $('#blackScreen').css("height",0);
+         $('#blackScreen').css("opacity",0);
+         if (goDown){
+            simulateWalkDown();
+            goDown=false;
+         }
+         else{
+           walking=false;
+         }
+     });
+}
+
+function thereIsSign(pos_x,pos_y){
+  var id_sign = -1;
+  $("#location").find(".sign").each(function(index){
+    sign_l = parseInt($(this).css("left"))/32 + 1;
+    sign_t = parseInt($(this).css("top"))/32 + 1;
+    if (sign_l == pos_x && sign_t == pos_y){
+        id_v = $(this).prop("id").split("-");
+        id_sign = id_v[1];
     }
 
+  });
+  return id_sign;
 }
 
 function obtainPlayerPosition(){
