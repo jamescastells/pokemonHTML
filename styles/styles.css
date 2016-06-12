@@ -62,3 +62,12 @@
 body{
   text-align:center;
 }
+
+.shadow {
+    position: absolute;
+    width: 28px;
+    height: 14px;
+    background: black;
+    z-index: 998;
+    border-radius: 50%;
+}

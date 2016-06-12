@@ -18,6 +18,19 @@ function thereIsBarrier(pos_x, pos_y, where){
   return thereIs;
 }
 
+function thereIsLedge(pos_x, pos_y, where){
+  var thereIs = false;
+  $("#"+where).find(".ledge").each(function(index){
+    ledge_l = parseInt($(this).css("left"))/32 + 1;
+    ledge_t = parseInt($(this).css("top"))/32 + 1;
+    if (ledge_l == pos_x && ledge_t == pos_y){
+      thereIs = true;
+    }
+
+  });
+  return thereIs;
+}
+
 function checkUp(pos_x,pos_y){
     if (pos_y == 0){
       if (north_c!='none'){
@@ -75,6 +88,12 @@ function movePlayer(){
         walking=false;
         return;
       }
+      if (thereIsLedge(pos_x,pos_y-1,"location")){
+        $("#player").css("background-image","url(sprites/up.png)");
+        walking_up=false;
+        walking=false;
+        return;
+      }
       if (walkUp=='right'){
         $("#player").css("background-image","url(sprites/walkingUpRight.png)");
         walkUp='left';
@@ -113,6 +132,11 @@ function movePlayer(){
         checkIfInRugWarp();
         return;
       }
+      if (thereIsLedge(pos_x,pos_y+1,"location")){
+        $("#player").css("background-image","url(sprites/down.png)");
+        jumpDown();
+        return;
+      }
       if (walkDown=='right'){
         $("#player").css("background-image","url(sprites/walkingDownRight.png)");
         walkDown='left';
@@ -149,6 +173,12 @@ function movePlayer(){
         walking=false;
         return;
       }
+      if (thereIsLedge(pos_x-1,pos_y,"location")){
+        $("#player").css("background-image","url(sprites/left.png)");
+        walking_left=false;
+        walking=false;
+        return;
+      }
       $("#player").css("background-image","url(sprites/walkingLeft.png)");
       moveEverythingLeft(32);
       actualLeft = parseInt($("#player").css("left"));
@@ -173,6 +203,12 @@ function movePlayer(){
         return;
       }
       if (thereIsBarrier(pos_x+1,pos_y,"location")){
+        $("#player").css("background-image","url(sprites/right.png)");
+        walking_right=false;
+        walking=false;
+        return;
+      }
+      if (thereIsLedge(pos_x+1,pos_y,"location")){
         $("#player").css("background-image","url(sprites/right.png)");
         walking_right=false;
         walking=false;
@@ -265,6 +301,37 @@ function isInRug(pos_x,pos_y){
     }
   });
   return found;
+}
+
+function jumpDown(){
+  moveEverythingUp(-32);
+  shadow = document.createElement("div");
+  $(shadow).addClass("shadow");
+  topOfShadow = parseInt($("#player").css("top"))+28;
+  leftOfShadow = parseInt($("#player").css("left"));
+  $(shadow).css("top",topOfShadow);
+  $(shadow).css("left",leftOfShadow);
+  document.getElementById("location").appendChild(shadow);
+  actualTop = parseInt($("#player").css("top"));
+  newTop = actualTop+16;
+  $(shadow).animate({
+    'top':topOfShadow+64
+  },speed*2);
+  $("#player").animate({
+      'top':newTop
+  },speed,function(){
+    moveEverythingUp(-32);
+    actualTop = parseInt($("#player").css("top"));
+    newTop = actualTop+48;
+    $("#player").animate({
+        'top':newTop
+    },speed,function(){
+        walking_down=false;
+        walking=false;
+        document.getElementById("location").removeChild(shadow);
+        refreshPlayerPositionData();
+      });
+  });
 }
 
 function simulateWalkDown(){

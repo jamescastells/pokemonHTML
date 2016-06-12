@@ -107,6 +107,8 @@ function loadLocation(name, start){
                       $(elemento).addClass("stairs");
                     else if (property.indexOf("rug")>-1)
                       $(elemento).addClass("rug");
+                    else if (property.indexOf("ledge")>-1)
+                      $(elemento).addClass("ledge");
                     else {
                       $(elemento).addClass("barrier");
                     }
@@ -229,7 +231,7 @@ function loadConnector(name,where,adjustement){
                   height_north = height_l *32;
                 }
                 if (where == "#down"){
-                  $(where).css("top",-height_l -height + screen_height+32);
+                  $(where).css("top",-height_l +screen_height- (pl_y*32)+32);
                   $(where).css("left",actualLeft + adjustement*32);
                   width_south = width_l * 32;
                   height_south = height_l *32;
